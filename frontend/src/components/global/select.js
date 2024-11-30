@@ -1,6 +1,6 @@
-'use client'
-import { useState, useRef, useEffect } from 'react'
-import { mc } from '../../lib/mc'
+'use client';
+import { useState, useRef, useEffect } from 'react';
+import { mc } from '../../lib/mc';
 
 export default function Select({
   value,
@@ -13,11 +13,11 @@ export default function Select({
   readOnly,
   noDefault = true,
 }) {
-  const containerRef = useRef(null)
-  const [selectedOption, setSelectedOption] = useState('')
-  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef(null);
+  const [selectedOption, setSelectedOption] = useState(value || '');
+  const [isOpen, setIsOpen] = useState(false);
 
-  const toggleOpen = () => setIsOpen(!isOpen)
+  const toggleOpen = () => setIsOpen(!isOpen);
   const handleOptionClick = (option) => {
     onChange({
       target: {
@@ -26,27 +26,27 @@ export default function Select({
         checked: false,
         type: 'select',
       },
-    })
-    setIsOpen(false)
-  }
+    });
+    setSelectedOption(option);
+    setIsOpen(false);
+  };
 
   useEffect(() => {
-    if (value) {
-      setSelectedOption(String(value))
-    } else {
-      if (!noDefault) {
-        onChange({
-          target: {
-            value: options[0],
-            name: name || '',
-            checked: false,
-            type: 'select',
-          },
-        })
-      }
+    if (value !== undefined && value !== null) {
+      setSelectedOption(String(value));
+    } else if (!noDefault) {
+      setSelectedOption('');
+      onChange({
+        target: {
+          value: '',
+          name: name || '',
+          checked: false,
+          type: 'select',
+        },
+      });
     }
     // eslint-disable-next-line
-  }, [value])
+  }, [value]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -54,15 +54,15 @@ export default function Select({
         containerRef.current &&
         !containerRef.current.contains(event.target)
       ) {
-        setIsOpen(false)
+        setIsOpen(false);
       }
-    }
+    };
 
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <main className={mc(`relative`, className)} ref={containerRef}>
@@ -97,7 +97,7 @@ export default function Select({
             readOnly ? 'cursor-not-allowed' : 'cursor-pointer'
           )}
         >
-          <span>{selectedOption}</span>
+          <span>{selectedOption}</span>{' '}
           <svg
             className={mc(`w-4 h-4 -mt-4`)}
             fill="none"
@@ -128,5 +128,5 @@ export default function Select({
         </div>
       )}
     </main>
-  )
+  );
 }

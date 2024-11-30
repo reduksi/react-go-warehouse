@@ -2,21 +2,36 @@ import React, { useEffect, useState } from 'react';
 import InputText from '../global/Input';
 import DateInput from '../global/dateInput';
 import Select from '../global/select';
+import NestedTable from '../global/nestedTable';
 import { FaTrash } from 'react-icons/fa';
-import { getAllProducts, getAllSuppliers, getAllWarehouses } from '../../api/master';
-import { createGoodsIssue } from '../../api/transaction';
+import {
+  getAllProducts,
+  getAllSuppliers,
+  getAllWarehouses,
+} from '../../api/master';
+import { createGoodsIssue, getAllGoodsIssue } from '../../api/transaction';
 import Swal from 'sweetalert2';
 
 const Goods = () => {
   const [form, setForm] = useState({
-    details: [{ product: '', qty_dus: '', qty_pcs: '' }]
+    details: [{ product: '', qty_dus: '', qty_pcs: '' }],
   });
   const [products, setProducts] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+
+  async function getTransactions() {
+    try {
+      const { data } = await getAllGoodsIssue();
+      setTransactions(data.reverse());
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
-    document.title = "Goods Receipt";
+    document.title = 'Goods Receipt';
 
     async function getProducts() {
       try {
@@ -44,39 +59,39 @@ const Goods = () => {
         console.log(error);
       }
     }
-
+    getTransactions();
     getProducts();
     getSuppliers();
     getWarehouses();
   }, []);
 
   function onChange(e) {
-  const { name, value } = e.target;
+    const { name, value } = e.target;
 
-  if (name.includes('-')) {
-    const [field, index] = name.split('-');
-    setForm((prevState) => {
-      const updatedDetails = [...prevState.details];
-      updatedDetails[index][field] = value;
-      return {
+    if (name.includes('-')) {
+      const [field, index] = name.split('-');
+      setForm((prevState) => {
+        const updatedDetails = [...prevState.details];
+        updatedDetails[index][field] = value;
+        return {
+          ...prevState,
+          details: updatedDetails,
+        };
+      });
+    } else {
+      setForm((prevState) => ({
         ...prevState,
-        details: updatedDetails,
-      };
-    });
-  } else {
-    setForm((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+        [name]: value,
+      }));
+    }
   }
-}
 
   function addDetail() {
     setForm((prevState) => ({
       ...prevState,
       details: [
         ...prevState.details,
-        { product: '', qty_dus: '', qty_pcs: '' }
+        { product: '', qty_dus: '', qty_pcs: '' },
       ],
     }));
   }
@@ -99,23 +114,27 @@ const Goods = () => {
         TrxOutNo: form.transactionNo,
         TrxOutNotes: form.notes,
         TrxOutDate: new Date(form.transactionDate),
-        WhsIdf: warehouses.find(x => x.whsName === form.warehouse)?.whsPK,
-        TrxOutSuppIdf: suppliers.find(x => x.whsName === form.supplierName)?.supplierPK,
+        WhsIdf: warehouses.find((x) => x.whsName === form.warehouse)?.whsPK,
+        TrxOutSuppIdf: suppliers.find((x) => x.supplierName === form.supplier)
+          ?.supplierPK,
       },
-      Details: form.details.map(detail => ({
+      Details: form.details.map((detail) => ({
         TrxOutDQtyDus: Number(detail.qty_dus),
         TrxOutDQtyPcs: Number(detail.qty_pcs),
-        TrxOutDProductIdf: products.find(x => x.productName === detail.product)?.productPK,
-      }))
+        TrxOutDProductIdf: products.find(
+          (x) => x.productName === detail.product
+        )?.productPK,
+      })),
     };
 
     try {
       await createGoodsIssue(payload);
       Swal.fire({
-        icon: "success",
-        title: "Out Transaction has been saved",
+        icon: 'success',
+        title: 'Out Transaction has been saved',
         showConfirmButton: false,
       });
+      getTransactions();
       setForm({
         transactionNo: '',
         transactionDate: '',
@@ -125,7 +144,7 @@ const Goods = () => {
         qty_dus: '',
         qty_pcs: '',
         notes: '',
-        details: [{ product: '', qty_dus: '', qty_pcs: '' }]
+        details: [{ product: '', qty_dus: '', qty_pcs: '' }],
       });
     } catch (error) {
       console.log(error);
@@ -138,15 +157,42 @@ const Goods = () => {
       <p>Goods Out Transaction</p>
       <form className="mt-6" onSubmit={onSubmit}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 my-4">
-          <InputText label="Transaction in No" name="transactionNo" onChange={onChange} value={form.transactionNo} />
-          <DateInput label="Transaction in Date" name="transactionDate" onChange={onChange} value={form.transactionDate} />
+          <InputText
+            label="Transaction in No"
+            name="transactionNo"
+            onChange={onChange}
+            value={form.transactionNo}
+          />
+          <DateInput
+            label="Transaction in Date"
+            name="transactionDate"
+            onChange={onChange}
+            value={form.transactionDate}
+          />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 my-4">
-          <Select label="Supplier" name="supplier" noDefault options={suppliers.map(x => x.supplierName)} onChange={onChange} value={form.supplier} />
-          <Select label="Warehouse" name="warehouse" noDefault options={warehouses.map(x => x.whsName)} onChange={onChange} value={form.warehouse} />
+          <Select
+            label="Supplier"
+            name="supplier"
+            options={suppliers.map((x) => x.supplierName)}
+            onChange={onChange}
+            value={form.supplier}
+          />
+          <Select
+            label="Warehouse"
+            name="warehouse"
+            options={warehouses.map((x) => x.whsName)}
+            onChange={onChange}
+            value={form.warehouse}
+          />
         </div>
         <div className="grid grid-cols-1 gap-4 my-4">
-          <InputText label="Transaction Notes" name="notes" onChange={onChange} value={form.notes} />
+          <InputText
+            label="Transaction Notes"
+            name="notes"
+            onChange={onChange}
+            value={form.notes}
+          />
         </div>
 
         <div className="my-4">
@@ -157,18 +203,28 @@ const Goods = () => {
                 <Select
                   label="Product"
                   name={`product-${index}`}
-                  noDefault
                   options={products.map((x) => x.productName)}
                   onChange={onChange}
                   value={detail.product}
                 />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 my-4">
-                <InputText label="Quantity (box)" type="number" name={`qty_dus-${index}`} onChange={onChange} value={detail.qty_dus} />
-                <InputText label="Quantity (pcs)" type="number" name={`qty_pcs-${index}`} onChange={onChange} value={detail.qty_pcs} />
+                <InputText
+                  label="Quantity (box)"
+                  type="number"
+                  name={`qty_dus-${index}`}
+                  onChange={onChange}
+                  value={detail.qty_dus}
+                />
+                <InputText
+                  label="Quantity (pcs)"
+                  type="number"
+                  name={`qty_pcs-${index}`}
+                  onChange={onChange}
+                  value={detail.qty_pcs}
+                />
               </div>
-              {
-                 form.details.length !== 1 &&
+              {form.details.length !== 1 && (
                 <div className="absolute -top-3 -right-3">
                   <button
                     type="button"
@@ -178,7 +234,7 @@ const Goods = () => {
                     <FaTrash />
                   </button>
                 </div>
-              }
+              )}
             </div>
           ))}
 
@@ -201,6 +257,12 @@ const Goods = () => {
           </button>
         </div>
       </form>
+      <NestedTable
+        data={transactions}
+        products={products}
+        suppliers={suppliers}
+        warehouses={warehouses}
+      />
     </div>
   );
 };

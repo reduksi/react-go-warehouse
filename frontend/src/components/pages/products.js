@@ -61,28 +61,28 @@ const ProductPage = () => {
         </div>
       </form>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left text-gray-500">
-          <thead class="text-xs text-gray-700 uppercase bg-gray-300">
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm text-left text-gray-500">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-300">
             <tr>
-              <th scope="col" class="px-6 py-3">
+              <th scope="col" className="px-6 py-3">
                 Id
               </th>
-              <th scope="col" class="px-6 py-3">
+              <th scope="col" className="px-6 py-3">
                 Product Name
               </th>
             </tr>
           </thead>
           <tbody>
             {products.map((supp) => (
-              <tr class="bg-white border-b">
+              <tr className="bg-white border-b">
                 <th
                   scope="row"
-                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                 >
                   {supp.productPK}
                 </th>
-                <td class="px-6 py-4">{supp.productName}</td>
+                <td className="px-6 py-4">{supp.productName}</td>
               </tr>
             ))}
           </tbody>
