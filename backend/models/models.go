@@ -57,3 +57,10 @@ type GoodsIssueDetail struct {
     TrxOutDQtyDus     int `json:"trxOutDQtyDus" db:"TrxOutDQtyDus"`
     TrxOutDQtyPcs     int `json:"trxOutDQtyPcs" db:"TrxOutDQtyPcs"`
 }
+
+type StockReport struct {
+    ProductPK    int     `json:"productPK" db:"ProductPK"`
+    ProductName  string  `json:"productName" db:"ProductName"`
+    StockInDus   int     `json:"stockInDus" db:"StockInDus"`
+    StockInPcs   int     `json:"stockInPcs" db:"StockInPcs"`
+}

@@ -31,3 +31,10 @@ export const getAllGoodsIssue = () => {
     data: null,
   });
 };
+export const getProductReport = () => {
+  return apiService({
+    url: `/stock-report`,
+    method: 'GET',
+    data: null,
+  });
+};

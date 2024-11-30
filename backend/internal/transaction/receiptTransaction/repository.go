@@ -8,6 +8,7 @@ import (
 
 type TransactionRepository interface {
 	GetAllGoodsReceiptHeaders() ([]models.GoodsReceiptHeader, error)
+	GetStockReport() ([]models.StockReport, error)
 	CreateGoodsReceipt(header models.GoodsReceiptHeader, details []models.GoodsReceiptDetail) (models.GoodsReceiptHeader, error)
 
 }
@@ -114,4 +115,48 @@ func (repo *transactionRepository) getGoodsReceiptDetails(headerID int) ([]model
 		details = append(details, detail)
 	}
 	return details, nil
+}
+
+func (repo *transactionRepository) GetStockReport() ([]models.StockReport, error) {
+    query := `
+        SELECT 
+			p.ProductPK, 
+			p.ProductName, 
+			COALESCE(SUM(grd.TrxInDQtyDus), 0) - COALESCE(SUM(gid.TrxOutDQtyDus), 0) AS StockInDus,
+			COALESCE(SUM(grd.TrxInDQtyPcs), 0) - COALESCE(SUM(gid.TrxOutDQtyPcs), 0) AS StockInPcs
+		FROM 
+			master_product p
+		LEFT JOIN 
+			goods_receipt_detail grd ON grd.TrxInDProductIdf = p.ProductPK
+		LEFT JOIN 
+			goods_issue_detail gid ON gid.TrxOutDProductIdf = p.ProductPK
+		GROUP BY 
+			p.ProductPK, p.ProductName
+		ORDER BY 
+			p.ProductPK;
+    `
+
+    rows, err := repo.db.Query(query)
+    if err != nil {
+        log.Println("Error querying stock report:", err)
+        return nil, err
+    }
+    defer rows.Close()
+
+    var report []models.StockReport
+    for rows.Next() {
+        var r models.StockReport
+        if err := rows.Scan(&r.ProductPK, &r.ProductName, &r.StockInDus, &r.StockInPcs); err != nil {
+            log.Println("Error scanning row:", err)
+            return nil, err
+        }
+        report = append(report, r)
+    }
+
+    if err := rows.Err(); err != nil {
+        log.Println("Error in rows:", err)
+        return nil, err
+    }
+
+    return report, nil
 }

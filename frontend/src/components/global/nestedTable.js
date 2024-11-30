@@ -45,8 +45,8 @@ const NestedTable = ({
                   {
                     suppliers.find(
                       (x) =>
-                        x.supplierPK === trx.trxOutSuppIdf ||
-                        x.supplierPK === trx.trxInSuppIdf
+                        String(x.supplierPK) === String(trx.trxOutSuppIdf) ||
+                        String(x.supplierPK) === String(trx.trxInSuppIdf)
                     )?.supplierName
                   }
                   )
@@ -92,8 +92,10 @@ const NestedTable = ({
                               {
                                 products.find(
                                   (x) =>
-                                    x.productPk === trx.trxOutDProductIdf ||
-                                    x.productPk === trx.trxInDProductIdf
+                                    String(x.productPK) ===
+                                      String(detail.trxOutDProductIdf) ||
+                                    String(x.productPK) ===
+                                      String(detail.trxInDProductIdf)
                                 )?.productName
                               }
                               )

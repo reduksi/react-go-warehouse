@@ -1,6 +1,7 @@
 package receiptTransaction
 
 import (
+	"log"
 	"net/http"
 	"warehouse/models"
 
@@ -40,4 +41,14 @@ func (h *TransactionHandler) CreateGoodsReceipt(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, createdHeader)
+}
+
+func (h *TransactionHandler) GetStockReport(c *gin.Context) {
+    report, err := h.repo.GetStockReport()
+    if err != nil {
+        log.Println("Error getting stock report:", err)
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate stock report"})
+        return
+    }
+    c.JSON(http.StatusOK, report)
 }
