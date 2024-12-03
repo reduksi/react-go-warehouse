@@ -9,14 +9,14 @@ const WarehousePage = () => {
   async function getWarehouses() {
     try {
       const { data } = await getAllWarehouses();
-      setWarehouses(data);
+      setWarehouses(data || []);
     } catch (error) {
       console.log(error);
     }
   }
 
   useEffect(() => {
-    document.title = 'Product Table';
+    document.title = 'Warehouse Table';
     getWarehouses();
   }, []);
 
@@ -28,7 +28,7 @@ const WarehousePage = () => {
       setNewValue('');
       Swal.fire({
         icon: 'success',
-        title: 'New Product has been added',
+        title: 'New Warehouse has been added',
         showConfirmButton: false,
       });
       getWarehouses();
@@ -39,7 +39,7 @@ const WarehousePage = () => {
 
   return (
     <div className="w-3/4">
-      <h2 className="text-3xl font-bold mb-4">Product</h2>
+      <h2 className="text-3xl font-bold mb-4">Warehouse</h2>
       <p className="mb-4">List of Warehouses!</p>
 
       <form className="mt-6" onSubmit={onSubmit}>

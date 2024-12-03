@@ -46,6 +46,7 @@ type GoodsIssueHeader struct {
     WhsIdf        int       `json:"whsIdf" db:"WhsIdf"`
     TrxOutDate    time.Time `json:"trxOutDate" db:"TrxOutDate"`
     TrxOutSuppIdf int       `json:"trxOutSuppIdf" db:"TrxOutSuppIdf"`
+    TrxOutCustIdf int       `json:"trxOutCustIdf" db:"TrxOutCustIdf"`
     TrxOutNotes   string    `json:"trxOutNotes" db:"TrxOutNotes"`
     Details      []GoodsIssueDetail     `json:"details"`
 }

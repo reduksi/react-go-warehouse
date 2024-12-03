@@ -9,7 +9,7 @@ const Supplier = () => {
   async function getSuppliers() {
     try {
       const { data } = await getAllSuppliers();
-      setSuppliers(data);
+      setSuppliers(data || []);
     } catch (error) {
       console.log(error);
     }

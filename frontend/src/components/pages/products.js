@@ -9,7 +9,7 @@ const ProductPage = () => {
   async function getProducts() {
     try {
       const { data } = await getAllProducts();
-      setProducts(data);
+      setProducts(data || []);
     } catch (error) {
       console.log(error);
     }

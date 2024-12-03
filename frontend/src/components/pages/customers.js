@@ -9,14 +9,14 @@ const CustomerPage = () => {
   async function getCustomers() {
     try {
       const { data } = await getAllCustomers();
-      setCustomers(data);
+      setCustomers(data || []);
     } catch (error) {
       console.log(error);
     }
   }
 
   useEffect(() => {
-    document.title = 'Product Table';
+    document.title = 'Customer Table';
     getCustomers();
   }, []);
 
@@ -28,7 +28,7 @@ const CustomerPage = () => {
       setNewValue('');
       Swal.fire({
         icon: 'success',
-        title: 'New Product has been added',
+        title: 'New Customer has been added',
         showConfirmButton: false,
       });
       getCustomers();
@@ -69,7 +69,7 @@ const CustomerPage = () => {
                 Id
               </th>
               <th scope="col" className="px-6 py-3">
-                Warehouse Name
+                Customer Name
               </th>
             </tr>
           </thead>

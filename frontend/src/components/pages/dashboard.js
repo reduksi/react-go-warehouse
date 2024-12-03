@@ -9,7 +9,7 @@ const Dashboard = () => {
     async function getReport() {
       try {
         const { data } = await getProductReport();
-        setReports(data);
+        setReports(data || []);
       } catch (error) {
         console.log(error);
       }

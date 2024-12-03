@@ -24,7 +24,7 @@ const Goods = () => {
   async function getTransactions() {
     try {
       const { data } = await getAllGoodsReceipt();
-      setTransactions(data.reverse());
+      setTransactions(data.reverse() || []);
     } catch (error) {
       console.log(error);
     }
@@ -36,7 +36,7 @@ const Goods = () => {
     async function getProducts() {
       try {
         const { data } = await getAllProducts();
-        setProducts(data);
+        setProducts(data || []);
       } catch (error) {
         console.log(error);
       }
@@ -45,7 +45,7 @@ const Goods = () => {
     async function getSuppliers() {
       try {
         const { data } = await getAllSuppliers();
-        setSuppliers(data);
+        setSuppliers(data || []);
       } catch (error) {
         console.log(error);
       }
@@ -54,7 +54,7 @@ const Goods = () => {
     async function getWarehouses() {
       try {
         const { data } = await getAllWarehouses();
-        setWarehouses(data);
+        setWarehouses(data || []);
       } catch (error) {
         console.log(error);
       }
